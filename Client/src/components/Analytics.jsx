@@ -1,6 +1,292 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
-import { TrendingUp, Package, AlertTriangle, CheckCircle } from 'lucide-react';
+import { TrendingUp, Package, AlertTriangle, CheckCircle, FileText, DollarSign, Clock } from 'lucide-react';
+
+// Process-specific analytics component
+const ProcessSpecificAnalytics = ({ analysisData }) => {
+  const { processType, processName, process_results, ai_insights } = analysisData;
+  
+  const formatCurrency = (value) => {
+    if (!value || isNaN(value)) return '₹0';
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      minimumFractionDigits: 0
+    }).format(value);
+  };
+
+  const renderThreeWayMatch = () => {
+    const data = process_results.three_way_match;
+    if (!data) return null;
+
+    const accuracyData = [
+      { name: 'Matched', value: data.matched, color: '#059669' },
+      { name: 'Discrepancies', value: data.discrepancies, color: '#dc2626' }
+    ];
+
+    return (
+      <div className="container">
+        <div className="dashboard-card">
+          <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '16px', color: '#1f2937' }}>
+            📊 {processName} Results
+          </h1>
+          
+          {/* Key Metrics */}
+          <div className="grid grid-3" style={{ marginBottom: '24px' }}>
+            <div className="metric-card success-metric">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <CheckCircle size={24} style={{ color: '#059669' }} />
+                <div>
+                  <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#059669' }}>
+                    {data.match_accuracy_pct?.toFixed(1)}%
+                  </div>
+                  <div style={{ fontSize: '14px', color: '#065f46' }}>Match Accuracy</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="metric-card">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FileText size={24} style={{ color: '#3b82f6' }} />
+                <div>
+                  <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#1e40af' }}>
+                    {data.total_documents}
+                  </div>
+                  <div style={{ fontSize: '14px', color: '#1e3a8a' }}>Total Documents</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="metric-card danger-metric">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <AlertTriangle size={24} style={{ color: '#dc2626' }} />
+                <div>
+                  <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#dc2626' }}>
+                    {data.discrepancies}
+                  </div>
+                  <div style={{ fontSize: '14px', color: '#991b1b' }}>Discrepancies</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Chart */}
+          <div className="dashboard-card">
+            <h3 style={{ marginBottom: '16px' }}>Document Match Status</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={accuracyData}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  dataKey="value"
+                  label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                >
+                  {accuracyData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Issues List */}
+          {data.issues && data.issues.length > 0 && (
+            <div className="dashboard-card">
+              <h3 style={{ marginBottom: '16px' }}>Issues Requiring Attention</h3>
+              {data.issues.map((issue, index) => (
+                <div key={index} className={`process-status ${issue.severity === 'high' ? 'process-error' : issue.severity === 'medium' ? 'process-warning' : 'process-complete'}`}>
+                  <AlertTriangle size={20} />
+                  <div>
+                    <div style={{ fontWeight: 'bold' }}>{issue.po_number}</div>
+                    <div style={{ fontSize: '14px', opacity: '0.8' }}>{issue.issue}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderExcessProcurement = () => {
+    const data = process_results.procurement_analysis;
+    if (!data) return null;
+
+    return (
+      <div className="container">
+        <div className="dashboard-card">
+          <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '16px', color: '#1f2937' }}>
+            📦 {processName} Results
+          </h1>
+          
+          {/* Key Metrics */}
+          <div className="grid grid-4" style={{ marginBottom: '24px' }}>
+            <div className="metric-card">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Package size={24} style={{ color: '#3b82f6' }} />
+                <div>
+                  <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#1e40af' }}>
+                    {data.total_orders}
+                  </div>
+                  <div style={{ fontSize: '14px', color: '#1e3a8a' }}>Total Orders</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="metric-card warning-metric">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <TrendingUp size={24} style={{ color: '#d97706' }} />
+                <div>
+                  <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#d97706' }}>
+                    {formatCurrency(data.total_excess_value)}
+                  </div>
+                  <div style={{ fontSize: '14px', color: '#92400e' }}>Excess Value</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="metric-card success-metric">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <DollarSign size={24} style={{ color: '#059669' }} />
+                <div>
+                  <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#059669' }}>
+                    {formatCurrency(data.optimization_savings)}
+                  </div>
+                  <div style={{ fontSize: '14px', color: '#065f46' }}>Potential Savings</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="metric-card danger-metric">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <AlertTriangle size={24} style={{ color: '#dc2626' }} />
+                <div>
+                  <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#dc2626' }}>
+                    {data.excess_orders}
+                  </div>
+                  <div style={{ fontSize: '14px', color: '#991b1b' }}>Excess Orders</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Excess Items Chart */}
+          {data.excess_items && (
+            <div className="dashboard-card">
+              <h3 style={{ marginBottom: '16px' }}>Top Excess Items</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={data.excess_items}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="item" angle={-45} textAnchor="end" height={100} />
+                  <YAxis />
+                  <Tooltip formatter={(value) => formatCurrency(value)} />
+                  <Bar dataKey="excess_value" fill="#d97706" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderProfitability = () => {
+    const data = process_results.profitability_analysis;
+    if (!data) return null;
+
+    return (
+      <div className="container">
+        <div className="dashboard-card">
+          <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '16px', color: '#1f2937' }}>
+            💰 {processName} Results
+          </h1>
+
+          {/* Top Vendors */}
+          {data.top_vendors && (
+            <div className="dashboard-card">
+              <h3 style={{ marginBottom: '16px' }}>Top Performing Vendors</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={data.top_vendors}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="vendor" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="margin" fill="#059669" name="Margin %" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+
+          {/* Top Categories */}
+          {data.top_categories && (
+            <div className="dashboard-card">
+              <h3 style={{ marginBottom: '16px' }}>Category Performance</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={data.top_categories}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="category" />
+                  <YAxis />
+                  <Tooltip formatter={(value, name) => name === 'profit' ? formatCurrency(value) : `${value}%`} />
+                  <Bar dataKey="margin" fill="#3b82f6" name="Margin %" />
+                  <Bar dataKey="profit" fill="#059669" name="Profit" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+
+          {/* Negative Margin Items */}
+          {data.negative_margin_skus && data.negative_margin_skus.length > 0 && (
+            <div className="dashboard-card">
+              <h3 style={{ marginBottom: '16px', color: '#dc2626' }}>⚠️ Negative Margin SKUs</h3>
+              {data.negative_margin_skus.map((item, index) => (
+                <div key={index} className="process-status process-error">
+                  <AlertTriangle size={20} />
+                  <div>
+                    <div style={{ fontWeight: 'bold' }}>{item.sku} - {item.product}</div>
+                    <div style={{ fontSize: '14px', opacity: '0.8' }}>Margin: {item.margin}%</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  // Render based on process type
+  switch (processType) {
+    case 'three-way-match':
+      return renderThreeWayMatch();
+    case 'excess-procurement':
+      return renderExcessProcurement();
+    case 'profitability':
+      return renderProfitability();
+    default:
+      return (
+        <div className="container">
+          <div className="dashboard-card">
+            <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '16px', color: '#1f2937' }}>
+              📊 {processName || 'Business Analysis'} Results
+            </h1>
+            <div className="ai-insight">
+              <p>Process analysis completed successfully.</p>
+              {ai_insights && (
+                <div style={{ marginTop: '16px' }}>
+                  <h3>AI Insights</h3>
+                  <p>{ai_insights.summary || 'Analysis results available.'}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+  }
+};
 
 const Analytics = ({ analysisData }) => {
   if (!analysisData) {
@@ -30,6 +316,14 @@ const Analytics = ({ analysisData }) => {
         </div>
       </div>
     );
+  }
+
+  // Check if this is process-specific data
+  const processType = analysisData.processType;
+  const processName = analysisData.processName;
+  
+  if (processType) {
+    return <ProcessSpecificAnalytics analysisData={analysisData} />;
   }
 
   const processResults = analysisData.process_results || {};

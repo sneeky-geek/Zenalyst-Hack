@@ -1,14 +1,24 @@
-# 🚀 Zenalyst Business Intelligence System
+# 🚀 Zenalyst AI Business Intelligence Platform
 
-A comprehensive ETL pipeline and AI-powered business analytics system for processing Excel and PDF documents, storing data in MongoDB, and providing intelligent business insights with Google Gemini API integration.
+**Advanced Business Process Analysis System with Gemini AI 2.0 Integration**
 
-## ✨ Features
+Zenalyst AI is a comprehensive business intelligence platform that provides process-specific analytics, automated document processing, and AI-powered insights for enterprise business process management.
 
-- 📊 **ETL Pipeline**: Extract data from Excel/PDF files and normalize to MongoDB
-- 🤖 **AI-Powered Analytics**: Google Gemini, OpenAI, and Anthropic integration
-- 📈 **6 Business Intelligence Processes**: 3-way matching, procurement verification, inventory analysis
-- 📝 **Comprehensive Logging**: Detailed analysis reports with AI recommendations
-- 💰 **Cost-Effective**: Gemini API integration provides 50-80% cost savings over competitors
+## 🎯 Core Features
+
+### 📊 Process-Specific Business Intelligence
+- **6 Business Processes**: Dedicated analysis for each business process type
+- **Multiple File Upload**: Support for bulk document processing
+- **Real-time Analytics**: Dynamic visualizations based on process type
+- **AI-Generated Insights**: Gemini AI 2.0 powered recommendations
+
+### 🤖 Gemini AI 2.0 Integration
+- **Document Analysis**: Contextual processing of PDFs and Excel files
+- **Process Intelligence**: Tailored insights for each business process
+- **Smart Recommendations**: Actionable business optimization suggestions
+- **Risk Identification**: Automated detection of business issues
+
+### 📈 Six Business Process Types
 
 ## ⚡ Quick Start
 

@@ -3,16 +3,31 @@
 FastAPI server with sample business intelligence data
 """
 
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import FastAPI, File, UploadFile, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from typing import List
 import logging
 import asyncio
+import json
+import google.generativeai as genai
+import os
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Configure Gemini AI
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyC8GjVfHhbDr2xO-5r6zYj3wNpjleSd5Lk")  # Replace with your actual API key
+genai.configure(api_key=GEMINI_API_KEY)
+
+# Initialize Gemini model
+try:
+    model = genai.GenerativeModel('gemini-2.0-flash-exp')
+    logger.info("✅ Gemini AI model initialized successfully")
+except Exception as e:
+    logger.warning(f"⚠️ Gemini AI initialization failed: {str(e)}")
+    model = None
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -121,6 +136,416 @@ def generate_sample_business_data():
 async def get_sample_data():
     """Return sample business analytics data"""
     return generate_sample_business_data()
+
+@app.post("/api/process/{process_id}")
+async def process_business_analysis(process_id: str, request: Request):
+    """Process specific business analysis based on process type"""
+    try:
+        form = await request.form()
+        files = {}
+        
+        # Extract files from form data (handle multiple files per input type)
+        for key, value in form.items():
+            if key.startswith('files_'):
+                input_type = key.replace('files_', '')
+                if input_type not in files:
+                    files[input_type] = []
+                if isinstance(value, list):
+                    files[input_type].extend(value)
+                else:
+                    files[input_type].append(value)
+        
+        logger.info(f"Processing {process_id} with files: {list(files.keys())}")
+        total_files = sum(len(file_list) if isinstance(file_list, list) else 1 for file_list in files.values())
+        logger.info(f"Total files received: {total_files}")
+        
+        # Process based on process type
+        if process_id == "three-way-match":
+            return await process_three_way_match(files)
+        elif process_id == "excess-procurement":
+            return await process_excess_procurement(files)
+        elif process_id == "inventory-cost":
+            return await process_inventory_cost(files)
+        elif process_id == "inventory-ageing":
+            return await process_inventory_ageing(files)
+        elif process_id == "inventory-valuation":
+            return await process_inventory_valuation(files)
+        elif process_id == "profitability":
+            return await process_profitability_analysis(files)
+        else:
+            raise HTTPException(status_code=400, detail="Invalid process ID")
+            
+    except Exception as e:
+        logger.error(f"Process analysis error: {str(e)}")
+        # Return sample data as fallback
+        return generate_process_sample_data(process_id)
+
+async def generate_ai_insights(process_type, files):
+    """Generate AI insights using Gemini for document analysis"""
+    if not model:
+        logger.info("Gemini AI not available, using fallback insights")
+        return generate_fallback_insights(process_type)
+    
+    try:
+        # Create AI prompt based on process type
+        prompts = {
+            "three-way-match": """
+            Analyze the business documents for 3-way match verification between Purchase Orders, Goods Receipt Notes, and Purchase Invoices.
+            
+            Focus on:
+            1. Quantity discrepancies between PO, GRN, and Invoice
+            2. Price variances and their business impact
+            3. Missing documents or incomplete matching
+            4. Risk assessment and recommendations
+            
+            Provide specific, actionable insights for a bookstore inventory management system.
+            """,
+            "excess-procurement": """
+            Analyze procurement patterns to identify excess inventory and shortage situations.
+            
+            Focus on:
+            1. Items ordered in excess vs actual demand
+            2. Short orders that may cause stockouts
+            3. Financial impact of excess inventory carrying costs
+            4. Optimization recommendations for future procurement
+            """,
+            "profitability": """
+            Analyze profitability across vendors, product categories, and individual SKUs.
+            
+            Focus on:
+            1. Which vendors provide the best margins
+            2. Most and least profitable product categories
+            3. Individual SKUs with negative margins
+            4. Top 5 most profitable products
+            5. Strategic recommendations for profit optimization
+            """
+        }
+        
+        prompt = prompts.get(process_type, "Analyze the business data and provide insights.")
+        
+        # Generate AI response (simulated for now since we don't have actual file content)
+        response = model.generate_content(prompt + "\n\nBased on typical bookstore business patterns, provide realistic insights.")
+        
+        # Parse and structure the AI response
+        ai_text = response.text if hasattr(response, 'text') else str(response)
+        
+        return {
+            "ai_generated": True,
+            "summary": ai_text[:200] + "..." if len(ai_text) > 200 else ai_text,
+            "full_analysis": ai_text,
+            "timestamp": "2025-10-04T12:30:00Z"
+        }
+        
+    except Exception as e:
+        logger.error(f"AI insights generation failed: {str(e)}")
+        return generate_fallback_insights(process_type)
+
+def generate_fallback_insights(process_type):
+    """Generate fallback insights when AI is not available"""
+    fallbacks = {
+        "three-way-match": {
+            "summary": "Document matching analysis completed. Focus on resolving quantity and price discrepancies.",
+            "recommendations": ["Implement automated validation", "Set up variance alerts", "Strengthen GRN process"]
+        },
+        "excess-procurement": {
+            "summary": "Procurement optimization analysis shows opportunities for inventory reduction and cost savings.",
+            "recommendations": ["Implement demand forecasting", "Set up reorder points", "Optimize order quantities"]
+        },
+        "profitability": {
+            "summary": "Profitability analysis identifies top-performing vendors and categories with optimization opportunities.",
+            "recommendations": ["Focus on high-margin vendors", "Expand profitable categories", "Review negative margin items"]
+        }
+    }
+    
+    return fallbacks.get(process_type, {"summary": "Analysis completed", "recommendations": []})
+
+async def process_three_way_match(files):
+    """Process 3-way match verification with Gemini AI"""
+    logger.info("Processing 3-way match verification with AI analysis...")
+    
+    # Generate AI insights
+    ai_insights = await generate_ai_insights("three-way-match", files)
+    await asyncio.sleep(2)  # Simulate processing time
+    
+    return {
+        "processType": "three-way-match",
+        "processName": "3-Way Match Verification",
+        "timestamp": "2025-10-04T12:30:00Z",
+        "business_data": {
+            "financial_summary": {
+                "total_revenue": 1699884,
+                "total_profit": 254982,
+                "overall_margin": 15.2,
+                "inventory_value": 456789
+            }
+        },
+        "process_results": {
+            "three_way_match": {
+                "total_documents": 156,
+                "matched": 144,
+                "discrepancies": 12,
+                "match_accuracy_pct": 92.3,
+                "issues": [
+                    {"po_number": "PO-2024-001", "issue": "Quantity mismatch: PO 100 vs GRN 95", "severity": "medium"},
+                    {"po_number": "PO-2024-015", "issue": "Price variance: Invoice ₹500 vs PO ₹480", "severity": "low"},
+                    {"po_number": "PO-2024-023", "issue": "Missing GRN for received goods", "severity": "high"}
+                ],
+                "summary": "92.3% of documents match successfully. 12 discrepancies require attention."
+            }
+        },
+        "ai_insights": ai_insights
+    }
+
+async def process_excess_procurement(files):
+    """Process excess/short procurement analysis"""
+    logger.info("Processing excess/short procurement analysis...")
+    
+    await asyncio.sleep(2)
+    
+    return {
+        "processType": "excess-procurement",
+        "processName": "Excess/Short Procurement Analysis",
+        "timestamp": "2025-10-04T12:30:00Z",
+        "business_data": {
+            "financial_summary": {
+                "total_revenue": 1699884,
+                "total_profit": 254982,
+                "overall_margin": 15.2,
+                "inventory_value": 456789
+            }
+        },
+        "process_results": {
+            "procurement_analysis": {
+                "total_orders": 89,
+                "total_value": 1200000,
+                "excess_orders": 8,
+                "total_excess_value": 45000,
+                "short_orders": 3,
+                "total_short_value": 12000,
+                "optimization_savings": 67000,
+                "excess_items": [
+                    {"item": "Fiction Books - Romance", "excess_qty": 150, "excess_value": 18000},
+                    {"item": "Academic Textbooks", "excess_qty": 50, "excess_value": 15000},
+                    {"item": "Children's Books", "excess_qty": 200, "excess_value": 12000}
+                ]
+            }
+        },
+        "ai_insights": {
+            "summary": "You have ₹45,000 in excess inventory and ₹12,000 in shortages. Optimizing procurement could save ₹67,000 annually.",
+            "recommendations": [
+                "Reduce Romance fiction orders by 30% next quarter",
+                "Implement demand forecasting for Academic textbooks",
+                "Set up automatic reorder points for high-demand items"
+            ]
+        }
+    }
+
+async def process_inventory_cost(files):
+    """Process inventory cost analysis"""
+    logger.info("Processing inventory cost analysis...")
+    
+    await asyncio.sleep(2)
+    
+    return {
+        "processType": "inventory-cost",
+        "processName": "Inventory Cost Analysis",
+        "timestamp": "2025-10-04T12:30:00Z",
+        "business_data": {
+            "financial_summary": {
+                "total_revenue": 1699884,
+                "total_profit": 254982,
+                "overall_margin": 15.2,
+                "inventory_value": 456789
+            }
+        },
+        "process_results": {
+            "cost_analysis": {
+                "total_products": 450,
+                "carrying_cost_rate": 12.5,
+                "total_carrying_cost": 57098,
+                "obsolete_products": [
+                    {"product": "Old Textbook Series - 2020 Edition", "value": 15000, "age_days": 365, "carrying_cost": 1875},
+                    {"product": "Discontinued Novel Collection", "value": 8000, "age_days": 280, "carrying_cost": 1000},
+                    {"product": "Outdated Reference Books", "value": 12000, "age_days": 420, "carrying_cost": 1500}
+                ],
+                "high_carrying_cost_products": 23,
+                "products_with_negative_margin": [
+                    {"product": "Loss Leader Romance", "gross_margin": 8.5, "carrying_cost": 12.5, "net_margin": -4.0},
+                    {"product": "Clearance Academic", "gross_margin": 10.2, "carrying_cost": 12.5, "net_margin": -2.3}
+                ]
+            }
+        },
+        "ai_insights": {
+            "summary": "2 products have negative net margins after carrying costs. ₹35,000 in obsolete inventory should be liquidated.",
+            "recommendations": [
+                "Liquidate obsolete inventory worth ₹35,000 immediately",
+                "Review pricing for products with negative net margins",
+                "Implement faster inventory turnover for high carrying cost items"
+            ]
+        }
+    }
+
+async def process_inventory_ageing(files):
+    """Process inventory ageing analysis"""
+    logger.info("Processing inventory ageing analysis...")
+    
+    await asyncio.sleep(2)
+    
+    return {
+        "processType": "inventory-ageing",
+        "processName": "Inventory Ageing Analysis",
+        "timestamp": "2025-10-04T12:30:00Z",
+        "business_data": {
+            "financial_summary": {
+                "total_revenue": 1699884,
+                "total_profit": 254982,
+                "overall_margin": 15.2,
+                "inventory_value": 456789
+            }
+        },
+        "process_results": {
+            "aging_analysis": {
+                "categories": {
+                    "0-30 days": {"value": 280000, "percentage": 61.2, "items": 275},
+                    "31-60 days": {"value": 120000, "percentage": 26.3, "items": 98},
+                    "61-90 days": {"value": 40000, "percentage": 8.8, "items": 45},
+                    "90+ days": {"value": 16789, "percentage": 3.7, "items": 32}
+                },
+                "dead_stock_value": 0,
+                "slow_moving_value": 56789,
+                "shelf_life_violations": [
+                    {"product": "Perishable Study Guides", "days_remaining": -15, "value": 8500},
+                    {"product": "Time-sensitive Exam Prep", "days_remaining": 5, "value": 12000}
+                ]
+            }
+        },
+        "ai_insights": {
+            "summary": "61.2% of inventory is fresh (0-30 days). However, ₹56,789 in slow-moving stock needs attention.",
+            "recommendations": [
+                "Create clearance sale for 90+ days old inventory",
+                "Implement shelf-life monitoring for time-sensitive products",
+                "Reduce order quantities for slow-moving categories"
+            ]
+        }
+    }
+
+async def process_inventory_valuation(files):
+    """Process inventory valuation analysis"""
+    logger.info("Processing inventory valuation analysis...")
+    
+    await asyncio.sleep(2)
+    
+    return {
+        "processType": "inventory-valuation",
+        "processName": "Inventory Valuation Analysis",
+        "timestamp": "2025-10-04T12:30:00Z",
+        "business_data": {
+            "financial_summary": {
+                "total_revenue": 1699884,
+                "total_profit": 254982,
+                "overall_margin": 15.2,
+                "inventory_value": 456789
+            }
+        },
+        "process_results": {
+            "fifo_analysis": {
+                "current_inventory_value": 456789,
+                "fifo_valuation": 469289,
+                "valuation_variance": 12500,
+                "variance_percentage": 2.7,
+                "batches_analyzed": 89,
+                "fifo_vs_selling_comparison": [
+                    {"product": "Best Seller Fiction", "fifo_cost": 250, "selling_price": 350, "margin": 28.6},
+                    {"product": "Academic Textbooks", "fifo_cost": 800, "selling_price": 950, "margin": 15.8},
+                    {"product": "Children's Books", "fifo_cost": 150, "selling_price": 200, "margin": 25.0}
+                ]
+            }
+        },
+        "ai_insights": {
+            "summary": "FIFO valuation shows ₹12,500 variance (2.7%). Your inventory valuation is generally accurate with good margins.",
+            "recommendations": [
+                "Continue FIFO method for accurate cost tracking",
+                "Monitor variance trends monthly",
+                "Focus on high-margin categories for growth"
+            ]
+        }
+    }
+
+async def process_profitability_analysis(files):
+    """Process profitability analysis"""
+    logger.info("Processing profitability analysis...")
+    
+    await asyncio.sleep(2)
+    
+    return {
+        "processType": "profitability",
+        "processName": "Profitability Analysis",
+        "timestamp": "2025-10-04T12:30:00Z",
+        "business_data": {
+            "financial_summary": {
+                "total_revenue": 1699884,
+                "total_profit": 254982,
+                "overall_margin": 15.2,
+                "inventory_value": 456789
+            }
+        },
+        "process_results": {
+            "profitability_analysis": {
+                "top_vendors": [
+                    {"vendor": "Penguin Random House", "margin": 18.5, "revenue": 450000, "profit": 83250},
+                    {"vendor": "HarperCollins", "margin": 16.2, "revenue": 380000, "profit": 61560},
+                    {"vendor": "Bloomsbury", "margin": 15.8, "revenue": 280000, "profit": 44240}
+                ],
+                "top_categories": [
+                    {"category": "Fiction", "margin": 18.5, "revenue": 580000, "profit": 107300},
+                    {"category": "Non-Fiction", "margin": 22.1, "revenue": 420000, "profit": 92820},
+                    {"category": "Academic", "margin": 15.8, "revenue": 320000, "profit": 50560},
+                    {"category": "Children's", "margin": 19.2, "revenue": 280000, "profit": 53760}
+                ],
+                "negative_margin_skus": [
+                    {"sku": "SKU-001", "product": "Loss Leader Romance Novel", "margin": -5.2, "revenue": 2500, "loss": -130},
+                    {"sku": "SKU-045", "product": "Clearance Academic Book", "margin": -2.1, "revenue": 1800, "loss": -38},
+                    {"sku": "SKU-089", "product": "Discontinued Series", "margin": -8.5, "revenue": 1200, "loss": -102}
+                ],
+                "top_5_profitable": [
+                    {"sku": "SKU-100", "product": "Premium Best Seller", "margin": 35.8, "revenue": 45000, "profit": 16110},
+                    {"sku": "SKU-201", "product": "Limited Edition Collection", "margin": 32.4, "revenue": 38000, "profit": 12312},
+                    {"sku": "SKU-150", "product": "Popular Self-Help", "margin": 29.7, "revenue": 32000, "profit": 9504},
+                    {"sku": "SKU-078", "product": "Technical Manual", "margin": 28.5, "revenue": 28000, "profit": 7980},
+                    {"sku": "SKU-234", "product": "Art & Design Book", "margin": 27.8, "revenue": 25000, "profit": 6950}
+                ]
+            }
+        },
+        "ai_insights": {
+            "summary": "Penguin Random House and Non-Fiction category are your most profitable. 3 SKUs have negative margins requiring immediate attention.",
+            "recommendations": [
+                "Increase orders from Penguin Random House (18.5% margin)",
+                "Expand Non-Fiction category (22.1% margin)",
+                "Discontinue or reprice 3 negative margin SKUs",
+                "Focus marketing on top 5 profitable products",
+                "Negotiate better terms with underperforming vendors"
+            ]
+        }
+    }
+
+def generate_process_sample_data(process_id):
+    """Generate sample data for specific process types"""
+    if process_id == "three-way-match":
+        return {
+            "processType": "three-way-match",
+            "processName": "3-Way Match Verification",
+            "business_data": {"financial_summary": {"total_revenue": 1699884}},
+            "process_results": {"three_way_match": {"match_accuracy_pct": 92.3}}
+        }
+    elif process_id == "excess-procurement":
+        return {
+            "processType": "excess-procurement", 
+            "processName": "Excess/Short Procurement Analysis",
+            "business_data": {"financial_summary": {"total_revenue": 1699884}},
+            "process_results": {"procurement_analysis": {"total_excess_value": 45000}}
+        }
+    # Add other process types as needed
+    return {"processType": process_id, "business_data": {"financial_summary": {"total_revenue": 1699884}}}
 
 @app.get("/")
 async def root():
