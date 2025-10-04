@@ -1,42 +1,231 @@
+/* Zenalyst AI Dashboard - Enhanced CSS */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+}
+
 #root {
-  max-width: 1280px;
+  height: 100vh;
+  width: 100vw;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8fafc;
+  color: #334155;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  background-color: #f8fafc;
+}
+
+.main-content {
+  flex: 1;
+  width: 100%;
+  overflow-y: auto;
+}
+
+.container {
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 20px;
+  width: 100%;
+  min-height: calc(100vh - 80px);
+}
+
+/* Dashboard Cards */
+.dashboard-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.metric-card {
+  background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid #c7d2fe;
+  margin: 8px;
+  min-width: 200px;
+}
+
+.success-metric {
+  background: linear-gradient(135deg, #dcfce7 0%, #d1fae5 100%);
+  border-color: #bbf7d0;
+}
+
+.warning-metric {
+  background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%);
+  border-color: #fde68a;
+}
+
+.danger-metric {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  border-color: #fecaca;
+}
+
+/* File Upload Area */
+.upload-area {
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 48px;
   text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: white;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.upload-area:hover, .upload-area.dragover {
+  border-color: #3b82f6;
+  background-color: #eff6ff;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.upload-text {
+  color: #64748b;
+  font-size: 16px;
+  margin-top: 8px;
+}
+
+/* Loading States */
+.loading-spinner {
+  border: 3px solid #e2e8f0;
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* AI Insights */
+.ai-insight {
+  background: linear-gradient(135deg, #faf5ff 0%, #fdf2f8 100%);
+  border: 1px solid #e9d5ff;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 16px 0;
+}
+
+/* Process Status */
+.process-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  margin: 8px 0;
+}
+
+.process-complete {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.process-warning {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.process-error {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+/* Navigation */
+.navbar {
+  background: linear-gradient(135deg, #1e40af 0%, #3730a3 100%);
+  padding: 16px 0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.navbar-brand {
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.navbar-nav {
+  display: flex;
+  gap: 24px;
+  list-style: none;
+}
+
+.navbar-link {
+  color: #e2e8f0;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.navbar-link:hover, .navbar-link.active {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+/* Grid Layouts */
+.grid {
+  display: grid;
+  gap: 20px;
+}
+
+.grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+}
+
+.grid-3 {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.grid-4 {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 12px;
   }
-  to {
-    transform: rotate(360deg);
+  
+  .dashboard-card {
+    padding: 16px;
   }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+  
+  .navbar-content {
+    flex-direction: column;
+    gap: 16px;
   }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+  
+  .navbar-nav {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 }

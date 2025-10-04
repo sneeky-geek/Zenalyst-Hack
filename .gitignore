@@ -49,6 +49,20 @@ venv.bak/
 *.log
 logs/
 etl_pipeline.log
+complete_analysis.log
+
+# Analysis output files
+analysis_reports/
+executive_summary_*.txt
+business_intelligence_summary.txt
+
+# Test and demo files
+test_*.py
+demo_*.py
+*_test.py
+*_demo.py
+*_COMPLETE.py
+*_integration_*.py
 
 # OS generated files
 .DS_Store
