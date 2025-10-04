@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zenalyst Dashboard Status</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #1976d2;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #333;
+            margin-top: 30px;
+        }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .success {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+        }
+        .warning {
+            background-color: #fff8e1;
+            border-left: 4px solid #ff9800;
+        }
+        .error {
+            background-color: #ffebee;
+            border-left: 4px solid #f44336;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        button {
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 8px;
+        }
+        button:hover {
+            background-color: #1565c0;
+        }
+        .action-panel {
+            margin-top: 20px;
+            padding: 16px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Zenalyst Dashboard Status</h1>
+    
+    <div class="card success">
+        <h2>API Server Status</h2>
+        <p>✅ The API server is running correctly on port 5000.</p>
+        <p>✅ The MongoDB connection is established.</p>
+        <p>✅ The ETL pipeline processed 261 records.</p>
+    </div>
+    
+    <div class="card warning">
+        <h2>Frontend Status</h2>
+        <p>⚠️ There's a Node.js version compatibility issue.</p>
+        <p>Current Node.js version: 20.17.0</p>
+        <p>Required for Vite: 20.19+ or 22.12+</p>
+    </div>
+    
+    <div class="card">
+        <h2>Enhanced Dashboard Components</h2>
+        <p>All enhanced components have been updated to work with the regular API server (port 5000):</p>
+        <ul>
+            <li>EnhancedKpiSummary</li>
+            <li>EnhancedTimeSeriesChart</li>
+            <li>OutlierDetectionCard</li>
+            <li>SegmentationAnalysisCard</li>
+            <li>EnhancedTransactionTable</li>
+        </ul>
+    </div>
+    
+    <div class="action-panel">
+        <h2>Next Steps</h2>
+        <p>To run the dashboard properly, you need to:</p>
+        <ol>
+            <li>Update Node.js to version 20.19+ or 22.12+</li>
+            <li>Restart the React frontend with <code>npm run dev</code></li>
+        </ol>
+        <p>Or use a compatible Node.js version with an older Vite by updating package.json.</p>
+    </div>
+    
+    <script>
+        // You could add JavaScript here to fetch from the API and display live data
+        // But since we're just showing a status page, we'll keep it simple
+    </script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+.tableContainer {
+  overflow-x: auto;
+}
+
+.tableTitle {
+  font-size: 1.125rem;
+  font-weight: 500;
+  margin-bottom: 16px;
+  padding: 0 16px;
+}
+
+.tableCell {
+  white-space: nowrap;
+}
+
+.chip {
+  font-size: 0.75rem;
+  height: 24px;
+}
+
+.chipPending {
+  background-color: #ffecb3;
+  color: #ff8f00;
+}
+
+.chipCompleted {
+  background-color: #c8e6c9;
+  color: #2e7d32;
+}
+
+.chipProcessing {
+  background-color: #bbdefb;
+  color: #1565c0;
+}
+
+.chipCancelled {
+  background-color: #ffcdd2;
+  color: #c62828;
+}
+
+.tableFooter {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 16px;
+}
+
+.pagination {
+  flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+  .tableTitle {
+    padding: 0 8px;
+  }
+  
+  .tableFooter {
+    padding: 8px;
+  }
+}

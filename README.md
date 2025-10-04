@@ -1,23 +1,76 @@
-# ETL Pipeline for Excel and PDF Processing
+# Zenalyst Financial Analytics Dashboard
 
-A comprehensive Python ETL pipeline that processes Excel (.xlsx, .xls) and PDF files, extracts structured data, normalizes the schema, and loads everything into MongoDB.
+A comprehensive solution for financial data extraction, transformation, loading, and visualization with advanced analytics capabilities. This project combines a robust Python ETL pipeline with a modern React dashboard featuring machine learning-powered insights for real-time financial data monitoring.
+
+### 📊 **Live Dashboard**
+- Real-time financial metrics display
+- Interactive charts for trend analysis
+- Transaction table with search and filtering
+- Responsive design for all device sizes
+
+### 🔄 **Enhanced Data Visualization Components**
+- Machine learning powered trend analysis with forecasting
+- Anomaly detection with highlighted unusual transactions
+- Automatic data segmentation with cluster visualization
+- Enhanced KPI tracking with comparative analysis
+- Optimized transaction table with anomaly highlighting
 
 ## Features
 
-### 📊 **Excel Processing**
-- Reads all sheets from Excel files (.xlsx, .xls)
-- Converts each sheet to structured records
-- Preserves sheet names and source file information
+### 🧠 **Enhanced Analytics Dashboard**
+- AI-powered trend detection and forecasting
+- Anomaly detection for unusual transactions
+- Automatic data segmentation and clustering
+- Interactive visualizations with drill-down capabilities
+- Performance-optimized with data caching
 
-### 📄 **PDF Processing**
-- **Primary**: Uses Camelot to extract tables from PDFs
-- **Fallback**: Uses pdfplumber for text extraction when tables aren't found
-- Handles invoices, purchase orders, and other tabular documents
+### 📤 **Direct File & Folder Upload with Insights**
+- Upload individual files or entire folders directly through the UI
+- Preserve folder structure for better organization
+- Automatic processing of uploaded files
+- Instant insights generation from your documents
+- Visual feedback on processing status
 
-### 🔄 **Data Normalization**
-- Standardizes column names to: `["Invoice_No", "Date", "Vendor", "Amount", "Tax", "Total", "Status", "source_file"]`
-- Maps common variations (e.g., "Invoice Number" → "Invoice_No")
-- Converts dates to proper datetime format
+### 📊 **ETL Pipeline**
+- Processes Excel files (.xlsx, .xls) including inventory registers
+- Extracts data from various PDF formats (invoices, purchase orders, GRN copies)
+- Normalizes data schema across different document types
+- Loads structured data into MongoDB
+
+### 📈 **Interactive Dashboard**
+- Real-time financial metrics display
+- Interactive charts for trend analysis
+- Transaction table with search and filtering
+- Responsive design for all device sizes
+
+### 🔍 **Document Insights**
+- Key findings from uploaded documents
+- Unusual transaction detection
+- Top vendor analysis
+- Document type breakdown
+- Financial trends visualization
+
+A comprehensive solution for financial data extraction, transformation, loading, and visualization. This project combines a robust Python ETL pipeline with a modern React dashboard for real-time financial data monitoring.
+
+## Features
+
+### 📊 **ETL Pipeline**
+- Processes Excel files (.xlsx, .xls) including inventory registers
+- Extracts data from various PDF formats (invoices, purchase orders, GRN copies)
+- Normalizes data schema across different document types
+- Loads structured data into MongoDB
+
+### � **Live Dashboard**
+- Real-time financial metrics display
+- Interactive charts for trend analysis
+- Transaction table with search and filtering
+- Responsive design for all device sizes
+
+### 🔄 **Data Visualization Components**
+- Monthly transaction trends
+- Status distribution charts
+- Vendor contribution analysis
+- Detailed transaction records
 - Parses numeric values for amounts, tax, and totals
 - Preserves original data in additional fields
 
@@ -26,76 +79,103 @@ A comprehensive Python ETL pipeline that processes Excel (.xlsx, .xls) and PDF f
 - Batch processing for efficiency
 - Comprehensive error handling and logging
 
+### 📱 **REST API**
+- Provides JSON endpoints for dashboard consumption
+- Includes data filtering, pagination and search
+- Performance-optimized MongoDB queries
+- Summary statistics and aggregated data endpoints
+
 ## Quick Start
 
 ### 1. Setup Environment
 ```bash
-# Make setup script executable and run it
-chmod +x setup.sh
-./setup.sh
-```
-
-Or manually:
-```bash
-# Install dependencies
+# Install Python dependencies
 pip install -r requirements.txt
 
-# Install system dependencies (macOS)
-brew install ghostscript
-
-# Install system dependencies (Ubuntu)
-sudo apt-get install ghostscript python3-tk
+# Install Node.js dependencies
+cd Client
+npm install
+cd ..
 ```
 
-### 2. Configure MongoDB Connection
-Set up your MongoDB connection string:
-
-**Option 1: Interactive Setup (Recommended)**
+### 2. Configure MongoDB
 ```bash
+# Run MongoDB configuration script
 python configure_mongodb.py
 ```
 
-**Option 2: Edit config.env file directly**
+### 3. Run ETL Pipeline
 ```bash
-# Edit config.env and replace with your connection string
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/
-```
-
-**Option 3: Environment Variable**
-```bash
-export MONGODB_URI="your_connection_string_here"
-```
-
-### 3. Test MongoDB Connection
-```bash
-python configure_mongodb.py test
-```
-
-### 4. Run the Pipeline
-```bash
+# Process sample data from Hackathon/Inputs
 python etl_pipeline.py
 ```
 
-## Usage
-
-### Basic Usage
-```python
-from etl_pipeline import ETLPipeline
-
-# Initialize pipeline
-pipeline = ETLPipeline()
-
-# Run on specific directory
-pipeline.run_pipeline("path/to/your/data")
+### 4. Start API Server
+```bash
+# Start the main API server
+python api_server.py
 ```
 
-### Custom Configuration
-```python
-# Option 1: Use your connection string directly
-pipeline = ETLPipeline(
-    mongo_uri="mongodb+srv://username:password@cluster.mongodb.net/",
-    db_name="my_finance_db",
-    collection_name="my_transactions"
+### 5. Start the API Server and Frontend (Simplified Approach)
+```bash
+# On Windows
+start_enhanced_dashboard.bat
+
+# On Unix/Linux/Mac
+chmod +x start_enhanced_dashboard.sh
+./start_enhanced_dashboard.sh
+```
+
+### 6. Alternate: Start Each Component Separately
+```bash
+# Start the API server in one terminal
+python upload_api_server.py
+
+# Start the React development server in another terminal
+cd Client
+npm run dev
+```
+
+## Documentation
+
+- For detailed instructions on setting up and using the enhanced analytics dashboard, see [ENHANCED_SETUP.md](ENHANCED_SETUP.md)
+- For an overview of the dashboard enhancements and features, see [ENHANCEMENTS.md](ENHANCEMENTS.md)
+- For API documentation, see the comments in `analytics_api_server.py` and `api_server.py`
+
+## Using the File & Folder Upload Feature
+
+1. Navigate to the dashboard in your browser
+2. At the top of the page, you'll see the file upload section
+3. To upload individual files:
+   - Click "Select Files" and choose Excel, CSV, or PDF documents
+4. To upload an entire folder:
+   - Click "Select Folder" and choose a folder containing financial documents
+   - All supported files (.xlsx, .xls, .csv, .pdf) within the folder will be processed
+   - The original folder structure will be preserved for better organization
+5. Click "Process Documents" to upload and analyze the files
+6. View generated insights in the "Document Insights" section
+7. The dashboard will automatically refresh with new data
+
+## Architecture
+
+### ETL Pipeline Components
+- **Extractors**: PDF parser, Excel processor, CSV handler
+- **Transformers**: Data normalizers, schema mappers
+- **Loaders**: MongoDB connector, batch processor
+
+### API Endpoints
+- `/api/upload` - Upload files for processing
+- `/api/process` - Process uploaded files
+- `/api/metrics` - Get dashboard metrics
+- `/api/transactions` - Get transaction data
+- `/api/vendors` - Get vendor statistics
+
+### Frontend Components
+- **FileUploader**: Handles file uploads and processing
+- **DocumentInsights**: Generates insights from uploaded files
+- **Dashboard**: Main visualization component
+- **Charts**: Monthly, Status, Vendor analysis
+- **TransactionTable**: Detailed transaction view
 )
 
 # Option 2: Configuration loaded from config.env file
@@ -209,36 +289,42 @@ The pipeline includes comprehensive error handling:
 3. **MongoDB**: Uses bulk inserts for efficiency
 4. **Parallel Processing**: Consider running multiple instances on different directories
 
+## Requirements
+
+- Python 3.8+
+- Node.js 20.19+ or 22.12+
+- MongoDB 4.4+
+- Required Python packages in requirements.txt
+- Required NPM packages in Client/package.json
+
 ## Troubleshooting
 
 ### Common Issues
 
-**"Import camelot could not be resolved"**
-- Install system dependencies: `brew install ghostscript` (macOS)
-- Ensure camelot-py is installed: `pip install camelot-py[cv]`
+**Node.js Version Error**
+- Upgrade Node.js to version 20.19+ or 22.12+ to run Vite
 
 **MongoDB Connection Failed**
-- Ensure MongoDB is running: `brew services start mongodb-community`
-- Check connection string in pipeline initialization
+- Ensure MongoDB is running locally or use MongoDB Atlas
+- Check connection string in configure_mongodb.py
 
-**PDF Processing Fails**
-- Check if PDF is password protected
-- Ensure PDF contains readable text/tables
-- Review logs for specific error messages
+**File Upload Fails**
+- Check if the upload directory exists and is writable
+- Verify the file types are supported (.xlsx, .xls, .csv, .pdf)
+- Check file size (limit is 16MB)
 
-**Excel Files Not Processing**
-- Verify file permissions
-- Check if files are password protected
-- Ensure files aren't corrupted
+**API Server Not Responding**
+- Verify both API servers are running (main and upload)
+- Check for port conflicts
 
 ## Contributing
 
-Feel free to extend the pipeline with additional features:
+Feel free to extend the application with additional features:
 - Support for more file formats
-- Additional data validation rules
-- Custom normalization logic
-- Different database backends
+- Additional insight generation
+- Custom visualization components
+- Mobile app integration
 
 ## License
 
-This ETL pipeline is provided as-is for educational and business use.
+This project is licensed under the MIT License - see the LICENSE file for details.

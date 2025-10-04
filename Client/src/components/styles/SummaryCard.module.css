@@ -1,0 +1,46 @@
+.summaryCard {
+  height: 100%;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.cardTitle {
+  font-size: 0.875rem;
+  color: rgba(0, 0, 0, 0.6);
+  margin-bottom: 8px;
+}
+
+.cardValue {
+  font-size: 2rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.cardTrend {
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+}
+
+.positiveIcon {
+  color: #4caf50;
+  margin-right: 4px;
+}
+
+.negativeIcon {
+  color: #f44336;
+  margin-right: 4px;
+}
+
+.positiveText {
+  color: #4caf50;
+}
+
+.negativeText {
+  color: #f44336;
+}
+
+.neutralText {
+  color: #757575;
+}

@@ -1,0 +1,79 @@
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.summarySection {
+  grid-column: span 12;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.chartSection {
+  grid-column: span 12;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 24px;
+}
+
+.monthlyChart {
+  grid-column: span 8;
+}
+
+.statusChart {
+  grid-column: span 4;
+}
+
+.vendorChart {
+  grid-column: span 6;
+}
+
+.tableSection {
+  grid-column: span 12;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}
+
+.errorContainer {
+  text-align: center;
+  padding: 24px;
+  background-color: #ffebee;
+  border-radius: 8px;
+  margin: 24px 0;
+}
+
+@media (max-width: 1200px) {
+  .summarySection {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .monthlyChart {
+    grid-column: span 12;
+  }
+  
+  .statusChart {
+    grid-column: span 12;
+  }
+  
+  .vendorChart {
+    grid-column: span 12;
+  }
+}
+
+@media (max-width: 600px) {
+  .dashboardGrid {
+    gap: 16px;
+  }
+  
+  .summarySection {
+    grid-template-columns: 1fr;
+  }
+}
